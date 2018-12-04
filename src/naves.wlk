@@ -4,9 +4,13 @@ class Nave {
 	var property distancia
 	var property combustible
 	
-	method acelerar(cuanto) {velocidadXSeg +=cuanto.min(100000) }
+	method acelerar(cuanto) {velocidadXSeg += cuanto
+							velocidadXSeg = velocidadXSeg.min(1000000)
+	}
 	
-	method desacelerar(cuanto) { velocidadXSeg -=cuanto.min(0) }
+	method desacelerar(cuanto) { velocidadXSeg -= cuanto
+								velocidadXSeg.max(0)
+	}
 	
 	method irHaciaElSol() { distancia = 10 }
 	
@@ -26,7 +30,14 @@ class Nave {
 	
 	method descargarCombustible(litros) { combustible -= litros }
 	
-	method recibirAmenaza()
+	method escapar()
+	
+	method avisar()
+	
+	method recibirAmenaza() {
+		self.avisar()
+		self.escapar()
+	}
 	
 	method tranquilidad() = combustible > 4000 and velocidadXSeg < 12000
 	
@@ -39,15 +50,15 @@ class NaveBaliza inherits Nave{
 	method cambiarColorDeBaliza(colorNuevo) { color = colorNuevo }
 	
 	override method prepararViaje() { super()
-									  self.cambiarColorDeBaliza("verde")
+									  self.cambiarColorDeBaliza("Verde")
 									  self.ponerseParaleloAlSol()
 	} 
 	
-	override method recibirAmenaza() {  self.irHaciaElSol() 
-										self.cambiarColorDeBaliza("Rojo")
-	}
+	override method escapar(){self.irHaciaElSol()}
 	
-	override method tranquilidad() = super() and  not color == "Rojo"
+	override method avisar(){self.cambiarColorDeBaliza("Rojo")}
+	
+	override method tranquilidad() = super() and  not( color == "Rojo")
 	
 }
 
@@ -73,10 +84,12 @@ class NaveDePasajeros inherits Nave{
 									  self.acercarseUnPocoAlSol()
 	}
 	
-	override method recibirAmenaza() { self.acelerar(velocidadXSeg * 2)
-									   self.descargarComida(1)
-									   self.descargarBebidas(2)
+	override method escapar() { self.acelerar(velocidadXSeg * 2) }
+	
+	override method avisar() { self.descargarComida(1)
+							   self.descargarBebidas(2)
 	}
+	
 	
 }
 
@@ -98,6 +111,8 @@ class NaveDeCobate inherits Nave{
 	method mensajesEmitidos() = mensajes
 	method primerMensajeEmitido() = mensajes.first()
 	method ultimoMensajeEmitido() = mensajes.last()
+	method numeroDeCaracteres(mensaje) = mensaje.size()
+	method esEscueta() = mensajes.all{ mensaje => self.numeroDeCaracteres(mensaje) < 30 }
 	
 	override method prepararViaje() { super()
 									  self.ponerseVisibles()
@@ -106,12 +121,12 @@ class NaveDeCobate inherits Nave{
 									  self.emitirMensaje("Saliendo en mision")
 	}
 	
-	override method recibirAmenaza() { self.escaparDelSol()
-									   self.escaparDelSol()
-									   self.emitirMensaje("Amenaza recibida")
-	}
+	override method escapar() { self.acercarseUnPocoAlSol()
+								self.acercarseUnPocoAlSol() }
 	
-	override method tranquilidad() = super() and  armamento
+	override method avisar() { self.emitirMensaje("Amenaza recibida") }
+	
+	override method tranquilidad() = super() and not armamento
 	
 }
 
@@ -125,7 +140,7 @@ class NaveHospital inherits NaveDePasajeros {
 									   self.prepararQuirofano(true)
 	}
 	
-	override method tranquilidad() = super() and quirofanoPreparado
+	override method tranquilidad() = super() and not quirofanoPreparado
 	
 }
 
@@ -136,7 +151,7 @@ class NaveDeCombateSigilosa inherits NaveDeCobate {
 									   self.ponerseInvisible()
 	}
 	
-	override method tranquilidad() = super() and camuflage
+	override method tranquilidad() = super() and not camuflage
 	
 }
 

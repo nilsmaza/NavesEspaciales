@@ -1,0 +1,40 @@
+import naves.*
+
+describe"Naves"{
+	
+	var nave1 = new NaveBaliza(velocidadXSeg = 0,combustible = 0,distancia = null,color = null)
+	var naveDeAtaque = new NaveDeCobate(velocidadXSeg = 0,combustible = 0,distancia = null, 
+						camuflage = false , armamento = false , 
+						mensajes = #{"2","1","despege","Llegando a Saturno" }
+	)
+	
+	
+	
+
+
+test"naveBaliza"{
+	
+	nave1.prepararViaje()
+	nave1.acelerar(20000)
+	assert.equals(25000,nave1.velocidadXSeg())
+	nave1.acelerar(970000)
+	assert.equals(995000,nave1.velocidadXSeg())
+	nave1.acelerar(20000)
+	assert.equals(1000000,nave1.velocidadXSeg())
+	assert.equals("Verde",nave1.color())
+	assert.notThat(nave1.tranquilidad())
+	nave1.cargarCombustible(20000)
+	nave1.desacelerar(999999)
+	assert.that(nave1.tranquilidad())
+	nave1.recibirAmenaza()
+	assert.equals("Rojo",nave1.color())
+	
+}
+
+test"naveDeAtaque"{
+	assert.that(naveDeAtaque.esEscueta())
+	naveDeAtaque.emitirMensaje("Llegamos a Saturno e hicimos un asado que tardo mas de 40 horas;)")
+	assert.notThat(naveDeAtaque.esEscueta())
+}
+
+}
